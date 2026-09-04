@@ -1,15 +1,16 @@
-"""
-config.py
----------
-Configuration variables for the Flask environment.
-Stores database connection strings, secret keys, and environment toggles.
-Never hardcode sensitive passwords here; use os.getenv() to pull from .env files.
-"""
 import os
 
-class Config:
-    # Default to a local SQLite database if no PostgreSQL URL is provided
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///mplad.db')
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-    # Disable modification tracking to save memory
+
+class Config:
+    SECRET_KEY = os.environ.get("SECRET_KEY", "satark-mplad-secret-key-2026")
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        "DATABASE_URL",
+        "sqlite:///" + os.path.join(BASE_DIR, "data", "satark_demo.db"),
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    DEMO_MODE = True
+    H3_RESOLUTION_DEFAULT = 9
+    H3_RESOLUTION_PRECISE = 10
+    SCRUTINY_THRESHOLD_INR = 500000.0
