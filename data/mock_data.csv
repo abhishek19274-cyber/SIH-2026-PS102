@@ -1,4 +1,0 @@
-project_id,state,district,constituency,mp_name,work_description,work_category,sanctioned_amount,disbursed_amount,project_status,implementing_agency,risk_score
-1,Maharashtra,Pune,Baramati,Real MP Name,Construction of CC road from village chowk,Road Construction,2500000,1800000,In Progress,District Administration,0.12
-2,Uttar Pradesh,Lucknow,Lucknow,Real MP Name,Installation of RO drinking water purifier,Drinking Water,1500000,1500000,Completed,Gram Panchayat,0.05
-3,Bihar,Patna,Patna Sahib,Real MP Name,Installation of solar street lights,Solar Street Light,3200000,0,Sanctioned,Zila Parishad,0.89
