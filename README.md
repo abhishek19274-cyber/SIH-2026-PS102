@@ -35,7 +35,7 @@ git clone https://github.com/abhishek19274-cyber/SIH-2026-PS102.git
 cd SIH-2026-PS102
 ```
 
-**2. Install dependencies:**
+**2. Install Python dependencies:**
 ```bash
 pip install -r backend/requirements.txt
 ```
@@ -44,16 +44,24 @@ pip install -r backend/requirements.txt
 ```bash
 python run.py
 ```
-Open **http://localhost:5000** for the Satark dashboard, or **http://localhost:5000/antigravity/** for the Antigravity UI.
+Open **http://localhost:5000**. Flask serves the built SPA from `frontend/dist` (committed in the repo) and the API under `/api/…`.
 
-The database auto-seeds synthetic fraud scenarios on first run.
-
-**4. Frontend (Next.js scaffold, optional):**
+**Rebuild the React dashboard after frontend changes:**
 ```bash
 cd frontend
 npm install
+npm run build
+cd ..
+```
+
+The database auto-seeds synthetic fraud scenarios on first run.
+
+**Optional — frontend hot-reload during UI work:**
+```bash
+cd frontend
 npm run dev
 ```
+Vite will proxy API calls; keep `python run.py` running on port 5000.
 
 ## Detection Engines
 

@@ -13,11 +13,11 @@ from backend.models import db, Project, Vendor, Transaction, Document, Alert
 from backend.utils.audit_logger import AuditLogger
 
 def create_app():
-    # Templates in ../templates, static in ../static
+    # React SPA is served from frontend/dist by the dashboard blueprint.
     app = Flask(
         __name__,
-        template_folder=os.path.join(BASE_DIR, "..", "frontend"),
-        static_folder=os.path.join(BASE_DIR, "..", "frontend")
+        template_folder=os.path.join(BASE_DIR, "..", "frontend", "dist"),
+        static_folder=os.path.join(BASE_DIR, "..", "frontend", "dist"),
     )
     app.config.from_object(Config)
 
