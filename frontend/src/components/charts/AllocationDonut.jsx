@@ -1,11 +1,9 @@
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { mpBudget } from "../../data/mockData";
-
 export function AllocationDonut({ budget, height = 240 }) {
-  const spent = budget?.spent !== undefined ? budget.spent : budget?.spent_cr !== undefined ? budget.spent_cr : mpBudget.spent;
-  const committed = budget?.committed !== undefined ? budget.committed : budget?.committed_cr !== undefined ? budget.committed_cr : mpBudget.committed;
-  const available = budget?.available !== undefined ? budget.available : budget?.available_cr !== undefined ? budget.available_cr : mpBudget.available;
+  const spent = budget?.spent !== undefined ? budget.spent : budget?.spent_cr !== undefined ? budget.spent_cr : 0;
+  const committed = budget?.committed !== undefined ? budget.committed : budget?.committed_cr !== undefined ? budget.committed_cr : 0;
+  const available = budget?.available !== undefined ? budget.available : budget?.available_cr !== undefined ? budget.available_cr : 5.0;
   const total = Number((spent + committed + available).toFixed(1)) || 5.0;
 
   const spentPercent = budget?.spentPercent !== undefined ? budget.spentPercent : Math.round((spent / total) * 100);

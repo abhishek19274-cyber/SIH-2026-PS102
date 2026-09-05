@@ -1,4 +1,4 @@
-﻿__pycache__/
+__pycache__/
 venv/
 .venv/
 .env
@@ -10,3 +10,6 @@ node_modules/
 .idea/
 *.iml
 .vscode/
+backend/data/mplads_raw/
+.next/
+frontend/.next/

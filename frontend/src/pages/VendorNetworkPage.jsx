@@ -9,7 +9,6 @@ import { useApp } from "../context/AppContext";
 import { riskTone, riskLabel } from "../utils/formatters";
 import { vendorService } from "../services/vendorService";
 import { adaptVendorNetwork, adaptVendor } from "../services/adapters";
-import { vendors } from "../data/mockData";
 
 export function VendorNetworkPage() {
   const { selectedVendor, selectedVendorId, setSelectedVendorId, setDemoStep } = useApp();
@@ -27,7 +26,7 @@ export function VendorNetworkPage() {
           setNetworkData(adaptVendorNetwork(rawNet));
         }
       } catch (err) {
-        console.warn("[MPLADS Sentinel] Backend network unavailable — using demo fallback.", err);
+        console.warn("[MPLADS Sentinel] Backend network unavailable.", err);
       }
     }
     fetchNetwork();
@@ -60,17 +59,12 @@ export function VendorNetworkPage() {
           return;
         }
       } catch (err) {
-        console.warn("[MPLADS Sentinel] Backend getVendor unavailable — synthesizing from network.", err);
+        console.warn("[MPLADS Sentinel] Backend getVendor unavailable.", err);
       }
 
       // If backend call failed or networkData loaded, synthesize from node or fallback
-      if (isMounted) {
-        if (netNode) {
-          setVendorDetail(adaptVendor(null, netNode, netLinks, netScore));
-        } else {
-          const fallbackVendor = vendors.find((v) => v.id === idStr) || vendors[0];
-          setVendorDetail(adaptVendor(fallbackVendor, null, netLinks, netScore));
-        }
+      if (isMounted && netNode) {
+        setVendorDetail(adaptVendor(null, netNode, netLinks, netScore));
       }
     }
 
@@ -80,15 +74,16 @@ export function VendorNetworkPage() {
     };
   }, [selectedVendorId, selectedVendor, networkData]);
 
-  // Derive active vendor with safe, instantaneous fallback
+  // Derive active vendor safely
+  const fallbackVendor = { id: selectedVendorId || "v1", risk: 0, name: "Loading Contractor Data..." };
   const activeVendor =
     vendorDetail ||
     adaptVendor(
-      vendors.find((v) => v.id === selectedVendorId) || vendors[0],
+      fallbackVendor,
       networkData?.nodes?.find((n) => String(n.id) === String(selectedVendorId)),
       networkData?.links || [],
       networkData?.scores?.[parseInt(String(selectedVendorId).replace(/\D/g, ""), 10)]
-    );
+    ) || fallbackVendor;
 
   const handleTestLinkedProject = () => {
     setDemoStep(3);
@@ -120,7 +115,7 @@ export function VendorNetworkPage() {
             size="sm"
             onClick={handleTestLinkedProject}
           >
-            Verify Linked Project (Berasia) →
+            Verify Linked Project →
           </Button>
         </div>
       }
@@ -132,7 +127,7 @@ export function VendorNetworkPage() {
             Tracked Contractors
           </span>
           <div className="text-xl font-bold font-mono text-[#17202A] mt-0.5">
-            {networkData?.nodes?.filter((n) => n.kind === "vendor" || String(n.id).startsWith("v"))?.length || 18} Entities
+            {networkData?.nodes?.filter((n) => n.kind === "vendor" || String(n.id).startsWith("v"))?.length || 0} Entities
           </div>
           <span className="text-[11px] text-[#5B6470]">100% PFMS mapped</span>
         </div>
@@ -142,7 +137,7 @@ export function VendorNetworkPage() {
             High-Risk Contractors
           </span>
           <div className="text-xl font-bold font-mono text-red-600 mt-0.5">
-            {networkData?.nodes?.filter((n) => n.risk >= 70 && (n.kind === "vendor" || String(n.id).startsWith("v")))?.length || 3} Flagged
+            {networkData?.nodes?.filter((n) => n.risk >= 70 && (n.kind === "vendor" || String(n.id).startsWith("v")))?.length || 0} Flagged
           </div>
           <span className="text-[11px] text-[#5B6470]">Multi-factor score ≥ 70</span>
         </div>
@@ -152,7 +147,7 @@ export function VendorNetworkPage() {
             Cartel & Co-Bidding Links
           </span>
           <div className="text-xl font-bold font-mono text-amber-600 mt-0.5">
-            {networkData?.links?.length || 95} Relationships
+            {networkData?.links?.length || 0} Relationships
           </div>
           <span className="text-[11px] text-[#5B6470]">Shared banking & addresses</span>
         </div>
@@ -162,7 +157,7 @@ export function VendorNetworkPage() {
             Active Cartel Ring
           </span>
           <div className="text-xl font-bold font-mono text-[#17202A] mt-0.5">
-            Ring 1 (Bhopal)
+            DB Analytics
           </div>
           <span className="text-[11px] text-red-600 font-semibold">Convex Hull Isolated</span>
         </div>
@@ -363,7 +358,7 @@ export function VendorNetworkPage() {
               className="w-full justify-center shadow-xs"
               onClick={handleTestLinkedProject}
             >
-              Verify Linked Project in Berasia →
+              Verify Linked Project →
             </Button>
           </div>
         </div>

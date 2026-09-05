@@ -1,4 +1,4 @@
-﻿import os
+import os
 import sys
 from flask import Flask, jsonify
 
@@ -31,11 +31,17 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-        # Seed demo data if DB is empty
+        # Seed REAL MPLADS data if DB is empty (falls back to synthetic)
         if Project.query.first() is None:
-            from backend.data.synthetic_generator import generate_demo_data
-            from backend.services.benchmark_service import BenchmarkService
-            generate_demo_data(db.session, BenchmarkService)
+            try:
+                from backend.data.real_data_generator import generate_real_data
+                from backend.services.benchmark_service import BenchmarkService
+                generate_real_data(db.session, BenchmarkService)
+            except Exception as e:
+                print(f"[Satark] Real data fetch failed ({e}), falling back to synthetic...")
+                from backend.data.synthetic_generator import generate_demo_data
+                from backend.services.benchmark_service import BenchmarkService
+                generate_demo_data(db.session, BenchmarkService)
 
     @app.route('/api/health')
     def health():

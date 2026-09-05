@@ -126,7 +126,7 @@ def _lat_lng(state_name):
 # Core generator
 # ---------------------------------------------------------------------------
 def generate_demo_data(session, BenchmarkService):
-    from services.geo_engine import latlng_to_h3
+    from backend.services.geo_engine import latlng_to_h3
 
     # ── 1. Vendors (18) ──────────────────────────────────────────────────
     vendor_data = []
@@ -217,7 +217,7 @@ def generate_demo_data(session, BenchmarkService):
     txn_data = []
     txn_id = 0
 
-    from services.benchmark_service import BenchmarkService as BS
+    from backend.services.benchmark_service import BenchmarkService as BS
 
     for p in project_data:
         n_txns = random.randint(3, 6)
@@ -301,9 +301,9 @@ def generate_demo_data(session, BenchmarkService):
         session.add(doc)
 
     # ── 5. Score transactions & vendors → create alerts ──────────────────
-    from services.anomaly_engine import TabularAnomalyEngine
-    from services.graph_engine import GraphEngine
-    from services.geo_engine import GeoEngine
+    from backend.services.anomaly_engine import TabularAnomalyEngine
+    from backend.services.graph_engine import GraphEngine
+    from backend.services.geo_engine import GeoEngine
 
     anomaly_eng = TabularAnomalyEngine()
     graph_eng = GraphEngine()

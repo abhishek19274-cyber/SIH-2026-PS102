@@ -8,9 +8,10 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
+# dist is committed so `python run.py` serves the SPA after a fresh clone
 dist-ssr
 *.local
+.next/
 
 # Editor directories and files
 .vscode/*

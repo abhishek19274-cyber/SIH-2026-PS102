@@ -5,7 +5,6 @@ import { AllocationDonut } from "../components/charts/AllocationDonut";
 import { ConstituencyMap } from "../components/maps/ConstituencyMap";
 import { Card, CardTitle, CardHint } from "../components/common/Card";
 import { Badge } from "../components/common/Badge";
-import { mpProjects } from "../data/mockData";
 import { riskTone } from "../utils/formatters";
 import { dashboardService } from "../services/dashboardService";
 import { adaptProject } from "../services/adapters";
@@ -19,12 +18,12 @@ export function MpDashboard() {
     let isMounted = true;
     async function fetchMpData() {
       try {
-        const data = await dashboardService.getMpDashboard({ mp_name: "Nandini Murthy" });
+        const data = await dashboardService.getMpDashboard();
         if (data && isMounted) {
           setMpData(data);
         }
       } catch (err) {
-        console.warn("[MPLADS Sentinel] Backend unavailable — using demo fallback.", err);
+        console.warn("[MPLADS Sentinel] Backend unavailable.", err);
       }
     }
     fetchMpData();
@@ -35,17 +34,20 @@ export function MpDashboard() {
 
   const projectsList = mpData?.projects?.length
     ? mpData.projects.map(adaptProject)
-    : mpProjects;
+    : [];
 
   const delayedWorks = projectsList.filter((p) => p.delayDays > 0);
   const criticalDelays = projectsList.filter(
     (p) => p.stage === "Recommended" && p.delayDays > 30
   );
 
+  const mpName = mpData?.mp_name || "Hon'ble MP";
+  const constituency = mpData?.constituency || "Unknown";
+
   return (
     <AppShell
-      title="Member of Parliament Interface · Bhopal Parliamentary Constituency"
-      subtitle="Transparent portfolio monitoring: ₹5.00 Cr annual allocation, project pipeline, and XGBoost completion forecasts"
+      title={`Member of Parliament Interface · ${constituency} Parliamentary Constituency`}
+      subtitle={`Transparent portfolio monitoring for ${mpName}: ₹5.00 Cr annual allocation, project pipeline, and XGBoost completion forecasts`}
     >
       {/* Top Split: ₹5 Cr Allocation Donut & Bottleneck Identifier */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -128,6 +130,11 @@ export function MpDashboard() {
                   </div>
                 </div>
               ))}
+              {delayedWorks.length === 0 && (
+                <div className="text-center text-[#7A838E] text-xs py-4">
+                  No delayed works identified.
+                </div>
+              )}
             </div>
           </div>
         </Card>
@@ -142,7 +149,7 @@ export function MpDashboard() {
                 PORTFOLIO WORKFLOW
               </span>
               <h2 className="text-sm font-semibold text-[#17202A]">
-                Project Lifecycle Pipeline (Bhopal Constituency)
+                Project Lifecycle Pipeline ({constituency} Constituency)
               </h2>
             </div>
             <p className="text-xs text-[#5B6470] mt-1">
@@ -260,11 +267,11 @@ export function MpDashboard() {
         {/* Leaflet Constituency Map */}
         <Card className="space-y-2 p-4">
           <div className="flex items-center justify-between">
-            <CardTitle>Constituency Spatial Distribution (Bhopal)</CardTitle>
+            <CardTitle>Constituency Spatial Distribution ({constituency})</CardTitle>
             <Badge tone="normal" className="font-mono text-[10px]">Geotagged GPS</Badge>
           </div>
           <CardHint>
-            Interactive GIS coordinates of sanctioned and ongoing works across Bhopal Parliamentary Constituency.
+            Interactive GIS coordinates of sanctioned and ongoing works across {constituency} Parliamentary Constituency.
           </CardHint>
           <ConstituencyMap projects={projectsList} height={280} />
         </Card>

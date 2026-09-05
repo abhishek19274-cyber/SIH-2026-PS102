@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satark - MoSPI MPLADS Intelligence</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="dark-theme">
+    
+    <!-- Background Elements for Glassmorphism -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar glass-panel">
+            <div class="logo">
+                <i class="fa-solid fa-shield-halved text-cyan"></i>
+                <h2>Satark</h2>
+            </div>
+            
+            <ul class="nav-links">
+                <li class="active" data-target="dashboard-view"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+                <li data-target="projects-view"><i class="fa-solid fa-building-flag"></i> Projects</li>
+                <li data-target="alerts-view"><i class="fa-solid fa-triangle-exclamation"></i> Risk Alerts <span class="badge" id="nav-alert-badge">0</span></li>
+                <li data-target="vendors-view"><i class="fa-solid fa-users"></i> Vendors</li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=MoSPI+Admin&background=06b6d4&color=fff" alt="User" class="avatar">
+                    <div class="user-details">
+                        <span class="name">MoSPI Nodal</span>
+                        <span class="role">Super Admin</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="topbar glass-panel">
+                <div class="search-bar">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Search projects, MPs, or vendors (NL Engine Active)...">
+                </div>
+                <div class="top-actions">
+                    <button class="btn btn-icon"><i class="fa-solid fa-bell"></i></button>
+                    <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Export Report</button>
+                </div>
+            </header>
+
+            <!-- Views Container -->
+            <div class="views-container">
+                
+                <!-- 1. DASHBOARD VIEW -->
+                <div id="dashboard-view" class="view active-view">
+                    <div class="page-header">
+                        <h1>Intelligence Overview</h1>
+                        <p class="subtitle">Live analysis of MPLADS expenditures and anomalies.</p>
+                    </div>
+
+                    <!-- KPI Cards -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card glass-panel">
+                            <div class="kpi-icon bg-cyan-dim"><i class="fa-solid fa-diagram-project text-cyan"></i></div>
+                            <div class="kpi-data">
+                                <h3>Total Projects</h3>
+                                <div class="value" id="kpi-projects">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card glass-panel">
+                            <div class="kpi-icon bg-green-dim"><i class="fa-solid fa-indian-rupee-sign text-green"></i></div>
+                            <div class="kpi-data">
+                                <h3>Total Disbursed</h3>
+                                <div class="value" id="kpi-disbursed">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card glass-panel">
+                            <div class="kpi-icon bg-red-dim"><i class="fa-solid fa-triangle-exclamation text-red"></i></div>
+                            <div class="kpi-data">
+                                <h3>Critical Alerts</h3>
+                                <div class="value text-red" id="kpi-alerts">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card glass-panel">
+                            <div class="kpi-icon bg-purple-dim"><i class="fa-solid fa-users-gear text-purple"></i></div>
+                            <div class="kpi-data">
+                                <h3>Cartel Rings</h3>
+                                <div class="value" id="kpi-cartels">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Dashboard Grid -->
+                    <div class="dashboard-grid">
+                        
+                        <!-- Map Section -->
+                        <div class="map-section glass-panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-map-location-dot"></i> Geospatial Project Distribution</h2>
+                                <span class="badge bg-cyan-dim text-cyan">Live</span>
+                            </div>
+                            <div id="map" class="map-container"></div>
+                        </div>
+
+                        <!-- Alerts Feed -->
+                        <div class="alerts-section glass-panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-bolt"></i> Real-Time Risk Feed</h2>
+                                <button class="btn btn-text text-cyan">View All</button>
+                            </div>
+                            <div class="alerts-list" id="alerts-feed">
+                                <!-- Populated by JS -->
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="charts-row">
+                        <div class="chart-container glass-panel">
+                            <h2>Project Risk Distribution</h2>
+                            <div class="chart-wrapper">
+                                <canvas id="riskChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container glass-panel">
+                            <h2>Expenditure Timeline</h2>
+                            <div class="chart-wrapper">
+                                <canvas id="timelineChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. PROJECTS VIEW (Hidden by default) -->
+                <div id="projects-view" class="view">
+                    <div class="page-header">
+                        <h1>Project Ledger</h1>
+                        <p class="subtitle">All MPLADS projects mapped from MoSPI.</p>
+                    </div>
+                    <div class="glass-panel table-container">
+                        <table class="data-table" id="projects-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>State / Constituency</th>
+                                    <th>Work Category</th>
+                                    <th>Sanctioned Amt</th>
+                                    <th>Status</th>
+                                    <th>Risk Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- OTHER VIEWS CAN BE ADDED HERE LATER -->
+                <div id="alerts-view" class="view">
+                    <div class="page-header">
+                        <h1>All Intelligence Alerts</h1>
+                    </div>
+                    <!-- Reuse or expand alerts feed here -->
+                </div>
+                <div id="vendors-view" class="view">
+                    <div class="page-header">
+                        <h1>Vendor Risk Analysis</h1>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Alert Modal for SHAP explanations -->
+    <div class="modal-overlay" id="alert-modal">
+        <div class="modal glass-panel">
+            <div class="modal-header">
+                <h2 id="modal-title">Alert Details</h2>
+                <button class="close-btn" id="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert-summary bg-red-dim" id="modal-summary">
+                    <!-- Summary -->
+                </div>
+                <h3>AI Explanation (SHAP)</h3>
+                <div class="shap-container" id="modal-shap">
+                    <!-- SHAP bars -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="modal-close-footer">Dismiss</button>
+                <button class="btn btn-primary bg-red border-red">Escalate for Audit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

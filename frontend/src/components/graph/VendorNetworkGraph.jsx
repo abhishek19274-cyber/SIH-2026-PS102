@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import * as d3 from "d3";
 import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
-import { vendorEdges, vendors } from "../../data/mockData";
 import { useApp } from "../../context/AppContext";
 import { riskTone } from "../../utils/formatters";
 
@@ -51,8 +50,8 @@ export function VendorNetworkGraph({ networkData, onSelectVendor }) {
       };
     }
     return {
-      nodes: vendors.map((v) => ({ ...v, kind: "vendor" })),
-      links: vendorEdges.map((e) => ({ ...e })),
+      nodes: [],
+      links: [],
     };
   }, [networkData]);
 

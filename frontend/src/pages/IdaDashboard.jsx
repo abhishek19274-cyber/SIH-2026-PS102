@@ -9,7 +9,6 @@ import { AppShell } from "../components/layout/AppShell";
 import { Card, CardTitle, CardHint } from "../components/common/Card";
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
-import { sanctions, districts } from "../data/mockData";
 import { useApp } from "../context/AppContext";
 import { riskTone, riskLabel } from "../utils/formatters";
 import { dashboardService } from "../services/dashboardService";
@@ -26,12 +25,12 @@ export function IdaDashboard() {
     let isMounted = true;
     async function fetchDistrictData() {
       try {
-        const data = await dashboardService.getDistrictDashboard({ district: "Bhopal" });
+        const data = await dashboardService.getDistrictDashboard({ district: "Pune" }); // Fetching for Pune since it's a real district in DB
         if (data && isMounted) {
           setDistrictData(data);
         }
       } catch (err) {
-        console.warn("[MPLADS Sentinel] Backend unavailable — using demo fallback.", err);
+        console.warn("[MPLADS Sentinel] Backend unavailable.", err);
       }
     }
     fetchDistrictData();
@@ -40,9 +39,9 @@ export function IdaDashboard() {
     };
   }, []);
 
-  const bhopalDistrict = districts.find((d) => d.name === "Bhopal") || districts[0];
-  const scPct = districtData?.sc_st?.sc_share_pct !== undefined ? districtData.sc_st.sc_share_pct : bhopalDistrict.scPct;
-  const stPct = districtData?.sc_st?.st_share_pct !== undefined ? districtData.sc_st.st_share_pct : bhopalDistrict.stPct;
+  const districtName = districtData?.district || "Pune";
+  const scPct = districtData?.sc_st?.sc_share_pct !== undefined ? districtData.sc_st.sc_share_pct : 0;
+  const stPct = districtData?.sc_st?.st_share_pct !== undefined ? districtData.sc_st.st_share_pct : 0;
 
   const pendingList = districtData?.pending_sanctions?.length
     ? districtData.pending_sanctions.map((p, idx) => ({
@@ -57,7 +56,7 @@ export function IdaDashboard() {
         stage: p.project_status || "Sanctioned",
         scStEarmarked: Boolean(p.sc_area || p.st_area),
       }))
-    : sanctions;
+    : [];
 
   const sortedSanctions = [...pendingList].sort((a, b) => a.daysRemaining - b.daysRemaining);
   const urgentCount = sortedSanctions.filter((s) => s.daysRemaining <= 10).length;
@@ -71,7 +70,7 @@ export function IdaDashboard() {
 
   return (
     <AppShell
-      title="Implementing District Authority (IDA) Portal · Bhopal District"
+      title={`Implementing District Authority (IDA) Portal · ${districtName} District`}
       subtitle="Tactical statutory triage: 45-day clearance window, spatial GIS validation, and contractor risk audits"
       actions={
         <div className="flex items-center gap-2">
@@ -93,8 +92,8 @@ export function IdaDashboard() {
         items={[
           {
             label: "45-Day Statutory Clock",
-            value: `${sortedSanctions[0]?.daysRemaining || 8} Days`,
-            subvalue: `Urgent: ${sortedSanctions[0]?.work || "Work in review"}`,
+            value: sortedSanctions.length > 0 ? `${sortedSanctions[0]?.daysRemaining} Days` : "All Cleared",
+            subvalue: sortedSanctions.length > 0 ? `Urgent: ${sortedSanctions[0]?.work}` : "No pending works",
             trend: `${urgentCount} Critical`,
             tone: "critical",
             icon: Clock,
@@ -207,6 +206,13 @@ export function IdaDashboard() {
                   </td>
                 </tr>
               ))}
+              {sortedSanctions.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="py-4 text-center text-[#7A838E]">
+                    No pending statutory sanctions found in database.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

@@ -1,8 +1,6 @@
 import React from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-import { mpProjects } from "../../data/mockData";
-
 // Helper to generate color-coded circular marker icons
 const createCustomIcon = (stage) => {
   const color =
@@ -32,7 +30,7 @@ const createCustomIcon = (stage) => {
 };
 
 export function ConstituencyMap({ projects, height = 340 }) {
-  const displayProjects = projects?.length ? projects : mpProjects;
+  const displayProjects = projects?.length ? projects : [];
   const bhopalCenter = [23.2599, 77.4126];
 
   return (
