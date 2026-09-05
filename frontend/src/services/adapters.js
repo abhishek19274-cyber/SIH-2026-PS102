@@ -230,31 +230,140 @@ export function adaptProject(p) {
 }
 
 /**
- * Adapts backend vendor object to frontend schema
+ * Adapts backend vendor object to frontend schema.
+ * Accurately combines vendor detail, network node attributes, links, and graph scores.
+ * Genuinely missing data returns null/— rather than zero-masking.
  */
-export function adaptVendor(v) {
-  if (!v) return null;
-  const contractValCr = v.total_contract_value
-    ? Number((v.total_contract_value / 10000000).toFixed(1))
-    : v.contractValueCr || 0;
+export function adaptVendor(v, networkNode = null, networkLinks = [], networkScore = null) {
+  if (!v && !networkNode) return null;
+
+  // Resolve numeric and string IDs
+  const rawId = v?.vendor_id ?? networkNode?.id ?? v?.id ?? 1;
+  const numId = parseInt(String(rawId).replace(/\D/g, ""), 10) || 1;
+  const idStr = `v${numId}`;
+
+  // Vendor Name
+  const name =
+    v?.business_name ||
+    v?.vendor_name ||
+    networkNode?.name ||
+    networkNode?.label ||
+    v?.name ||
+    `Vendor-${String(numId).padStart(3, "0")}`;
+
+  // Score Object from network scores or vendor graph_score
+  const scoreObj = networkScore || v?.graph_score || {};
+
+  // Risk Score (0-100)
+  const rawRisk =
+    v?.lifetime_risk_score !== undefined
+      ? v.lifetime_risk_score
+      : scoreObj?.lifetime_risk_score !== undefined
+      ? scoreObj.lifetime_risk_score
+      : networkNode?.risk !== undefined
+      ? networkNode.risk
+      : v?.risk;
+  const risk = adaptRisk(rawRisk);
+
+  // Contracts Value in Crores (from networkNode.value or total_contract_value or contractValueCr)
+  let contractValueCr = null;
+  if (networkNode?.value !== undefined && networkNode?.value !== null) {
+    contractValueCr = Number(networkNode.value) / 10000000;
+  } else if (v?.total_contract_value !== undefined && v?.total_contract_value !== null) {
+    contractValueCr = Number(v.total_contract_value) / 10000000;
+  } else if (v?.contractValueCr !== undefined && v?.contractValueCr !== null) {
+    contractValueCr = Number(v.contractValueCr);
+  }
+
+  // Active Works Count (from network paid_on links or v.active_projects)
+  let activeWorksCount = null;
+  if (Array.isArray(networkLinks) && networkLinks.length > 0) {
+    const paidOnCount = networkLinks.filter((l) => {
+      const src = String(typeof l.source === "object" ? l.source.id : l.source);
+      const tgt = String(typeof l.target === "object" ? l.target.id : l.target);
+      const kind = l.kind || l.type;
+      return (src === idStr || src === String(numId)) && (kind === "paid_on" || tgt.startsWith("p"));
+    }).length;
+    if (paidOnCount > 0) activeWorksCount = paidOnCount;
+  }
+  if (activeWorksCount === null) {
+    if (v?.active_projects !== undefined && v?.active_projects !== null) {
+      activeWorksCount = Number(v.active_projects);
+    } else if (v?.activeWorksCount !== undefined && v?.activeWorksCount !== null) {
+      activeWorksCount = Number(v.activeWorksCount);
+    }
+  }
+
+  // Network Relationship Counts
+  const linkedBank = Array.isArray(scoreObj.linked_bank) ? scoreObj.linked_bank : [];
+  const linkedAddress = Array.isArray(scoreObj.linked_address) ? scoreObj.linked_address : [];
+  const linkedPan = Array.isArray(scoreObj.linked_pan) ? scoreObj.linked_pan : [];
+  const coBidders = Array.isArray(scoreObj.co_bidders) ? scoreObj.co_bidders : [];
+
+  let linkedBankCount = linkedBank.length;
+  let linkedAddressCount = linkedAddress.length;
+  if (linkedBankCount === 0 && Array.isArray(networkLinks)) {
+    linkedBankCount = networkLinks.filter((l) => {
+      const src = String(typeof l.source === "object" ? l.source.id : l.source);
+      const tgt = String(typeof l.target === "object" ? l.target.id : l.target);
+      const kind = l.kind || l.type;
+      return (src === idStr || tgt === idStr) && (kind === "shares_bank" || kind === "bank" || kind === "account");
+    }).length;
+  }
+  if (linkedAddressCount === 0 && Array.isArray(networkLinks)) {
+    linkedAddressCount = networkLinks.filter((l) => {
+      const src = String(typeof l.source === "object" ? l.source.id : l.source);
+      const tgt = String(typeof l.target === "object" ? l.target.id : l.target);
+      const kind = l.kind || l.type;
+      return (src === idStr || tgt === idStr) && (kind === "shares_address" || kind === "address");
+    }).length;
+  }
+
+  // Cartel Ring Identification
+  const cartelGroupId = v?.cartel_group_id || scoreObj.cartel_group_id || networkNode?.cartel_group_id || null;
+
+  // Narrative & Explicit Audit Signals
+  const narrative = scoreObj.narrative || v?.narrative || null;
+  const signals = Array.isArray(scoreObj.signals) ? scoreObj.signals : [];
+
+  // SHAP Attribution Waterfall
+  const shapRaw = scoreObj.shap || v?.graph_score?.shap || v?.shap;
+  const shap = adaptShap(shapRaw);
 
   return {
-    id: v.vendor_id !== undefined ? `v${v.vendor_id}` : v.id || "",
-    vendorId: v.vendor_id,
-    name: v.business_name || v.vendor_name || v.name || `Vendor #${v.vendor_id}`,
-    risk: adaptRisk(v.lifetime_risk_score !== undefined ? v.lifetime_risk_score : v.composite_risk_score !== undefined ? v.composite_risk_score : v.risk),
-    contractValueCr: contractValCr,
-    cartelGroupId: v.cartel_group_id,
+    id: idStr,
+    vendorId: numId,
+    name,
+    risk,
+    contractValueCr,
+    activeWorksCount,
+    cartelGroupId,
+    gstin: v?.gstin_number || null,
+    panHash: v?.pan_hash || null,
+    bankHash: v?.bank_account_hash || null,
+    registeredAddress: v?.registered_address || null,
+    state: v?.state || null,
+    constituencies: v?.constituency
+      ? [v.constituency]
+      : v?.district
+      ? [v.district]
+      : v?.constituencies || (v?.state ? [v.state] : []),
+    linkedBankCount,
+    linkedAddressCount,
+    linkedPanCount: linkedPan.length,
+    coBiddersCount: coBidders.length,
+    coBidders,
+    signals,
+    narrative,
+    shap,
+    completionRate: v?.completionRate !== undefined ? v.completionRate : null,
+    overrunRate: v?.overrunRate !== undefined ? v.overrunRate : null,
     flaggedReason:
-      v.flagged_reasons?.join("; ") ||
-      v.graph_score?.narrative ||
-      v.flaggedReason ||
-      "Anomalous co-bidding or shared identifier detected",
-    completionRate: v.completionRate !== undefined ? v.completionRate : 0.65,
-    overrunRate: v.overrunRate !== undefined ? v.overrunRate : 0.35,
-    activeWorksCount: v.active_projects || v.activeWorksCount || 2,
-    constituencies: v.constituency ? [v.constituency] : v.district ? [v.district] : v.constituencies || ["Bhopal"],
-    shap: adaptShap(v.graph_score?.shap || v.shap),
+      v?.flagged_reasons?.join("; ") ||
+      narrative ||
+      (signals.length ? signals.join("; ") : null) ||
+      v?.flaggedReason ||
+      null,
     raw: v,
   };
 }

@@ -15,6 +15,8 @@ import { riskTone, riskLabel } from "../utils/formatters";
 import { dashboardService } from "../services/dashboardService";
 import { adaptRisk } from "../services/adapters";
 
+import { MetricStrip } from "../components/common/MetricStrip";
+
 export function IdaDashboard() {
   const { setSelectedVendorId, setDemoStep } = useApp();
   const navigate = useNavigate();
@@ -59,6 +61,7 @@ export function IdaDashboard() {
 
   const sortedSanctions = [...pendingList].sort((a, b) => a.daysRemaining - b.daysRemaining);
   const urgentCount = sortedSanctions.filter((s) => s.daysRemaining <= 10).length;
+  const totalSanctionValue = sortedSanctions.reduce((sum, s) => sum + s.amountCr, 0).toFixed(2);
 
   const handleReviewVendor = (vendorId) => {
     setSelectedVendorId(vendorId);
@@ -68,8 +71,8 @@ export function IdaDashboard() {
 
   return (
     <AppShell
-      title="Implementing District Authority (IDA) Portal · Bhopal"
-      subtitle="Tactical operational triage: statutory sanction deadlines, spatial clearances, and vendor verification"
+      title="Implementing District Authority (IDA) Portal · Bhopal District"
+      subtitle="Tactical statutory triage: 45-day clearance window, spatial GIS validation, and contractor risk audits"
       actions={
         <div className="flex items-center gap-2">
           <Link to="/spatial">
@@ -85,162 +88,121 @@ export function IdaDashboard() {
         </div>
       }
     >
-      {/* Top 3 Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border-rose-500/20 bg-rose-500/5">
-          <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-rose-300">
-            <span>45-Day Statutory Clock</span>
-            <Clock className="h-4 w-4" />
-          </div>
-          <div className="mt-2 text-3xl font-extrabold text-rose-300 font-mono">
-            {sortedSanctions[0]?.daysRemaining || 8} Days
-          </div>
-          <p className="mt-1 text-xs text-slate-300">
-            Nearest statutory deadline: <span className="font-semibold">{sortedSanctions[0]?.work || "Work in review"}</span>
-          </p>
-          <div className="mt-2 text-[11px] text-rose-400 font-medium">
-            ⚠️ {urgentCount} works within critical 10-day sanction window
-          </div>
-        </Card>
+      {/* 1. District Statutory Operations Metric Strip */}
+      <MetricStrip
+        items={[
+          {
+            label: "45-Day Statutory Clock",
+            value: `${sortedSanctions[0]?.daysRemaining || 8} Days`,
+            subvalue: `Urgent: ${sortedSanctions[0]?.work || "Work in review"}`,
+            trend: `${urgentCount} Critical`,
+            tone: "critical",
+            icon: Clock,
+          },
+          {
+            label: "Pending Sanctions Queue",
+            value: String(sortedSanctions.length),
+            subvalue: `Total Value: ₹${totalSanctionValue} Cr`,
+            trend: "Awaiting Clearance",
+            tone: "elevated",
+            icon: FileCheck2,
+          },
+          {
+            label: "District SC Compliance",
+            value: `${scPct}%`,
+            subvalue: "Statutory Mandate: 15.0%",
+            trend: scPct >= 15 ? "Compliant" : `Lag ${(15 - scPct).toFixed(1)}%`,
+            tone: scPct >= 15 ? "normal" : "elevated",
+          },
+          {
+            label: "District ST Compliance",
+            value: `${stPct}%`,
+            subvalue: "Statutory Mandate: 7.5%",
+            trend: stPct >= 7.5 ? "Compliant" : `Lag ${(7.5 - stPct).toFixed(1)}%`,
+            tone: stPct >= 7.5 ? "normal" : "elevated",
+          },
+        ]}
+      />
 
-        <Card className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
-            <span>District SC / ST Compliance</span>
-            <Badge tone={scPct >= 15 && stPct >= 7.5 ? "normal" : "elevated"}>
-              {scPct >= 15 && stPct >= 7.5 ? "Compliant" : "Lagging"}
-            </Badge>
-          </div>
-          <div className="space-y-1 text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-300">SC Earmarking</span>
-              <span className="font-mono font-bold text-amber-300">
-                {scPct}% / 15.0%
-              </span>
-            </div>
-            <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-amber-400"
-                style={{ width: `${Math.min(100, (scPct / 15) * 100)}%` }}
-              />
-            </div>
-          </div>
-          <div className="space-y-1 text-xs pt-1">
-            <div className="flex justify-between">
-              <span className="text-slate-300">ST Earmarking</span>
-              <span className="font-mono font-bold text-amber-300">
-                {stPct}% / 7.5%
-              </span>
-            </div>
-            <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-amber-400"
-                style={{ width: `${Math.min(100, (stPct / 7.5) * 100)}%` }}
-              />
-            </div>
-          </div>
-        </Card>
-
-        <Card className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
-            <span>Operational Triage Shortcuts</span>
-            <FileCheck2 className="h-4 w-4 text-sky-400" />
-          </div>
-          <p className="text-xs text-slate-300">
-            High-risk proposals require spatial conflict check & vendor background inspection before sanction approval.
-          </p>
-          <div className="flex flex-wrap gap-2 pt-1">
-            <Link
-              to="/spatial"
-              className="flex-1 rounded-lg border border-slate-700 bg-slate-800/80 px-2.5 py-1.5 text-center text-xs font-medium text-sky-300 hover:bg-slate-700 transition"
-            >
-              Verify Coordinates
-            </Link>
-            <Link
-              to="/alerts"
-              className="flex-1 rounded-lg border border-slate-700 bg-slate-800/80 px-2.5 py-1.5 text-center text-xs font-medium text-rose-300 hover:bg-slate-700 transition"
-            >
-              Review Flagged Works
-            </Link>
-          </div>
-        </Card>
-      </div>
-
-      {/* Pending Sanctions Queue Table */}
-      <Card className="space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      {/* 2. Operational Statutory Sanctions Queue Table */}
+      <Card className="p-0 overflow-hidden flex flex-col">
+        <div className="p-3 sm:px-4 border-b border-[#D9DDE3] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <CardTitle>Pending Sanctions Queue</CardTitle>
+            <CardTitle className="text-sm">Statutory Sanctions & Verification Queue</CardTitle>
             <CardHint>
-              Mandatory 45-day statutory approval clock. Works sorted by days remaining before statutory expiry.
+              Mandatory 45-day statutory approval clock. Sorted in ascending order of remaining statutory days before automatic escalation.
             </CardHint>
           </div>
-          <span className="text-xs text-slate-400 font-mono">
-            {sortedSanctions.length} Total Pending Actions
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono text-[#7A838E]">
+              {sortedSanctions.length} Proposals Pending Review
+            </span>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-800 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <table className="w-full text-left text-xs">
+            <thead className="border-b border-[#D9DDE3] bg-[#F0F2F5] text-[9px] font-bold uppercase tracking-wider text-[#7A838E]">
               <tr>
-                <th className="py-2.5 px-3">Proposed Work</th>
-                <th className="py-2.5 px-3">Category</th>
-                <th className="py-2.5 px-3">Designated Vendor</th>
-                <th className="py-2.5 px-3 text-right">Cost (₹ Cr)</th>
-                <th className="py-2.5 px-3 text-center">Days Remaining</th>
-                <th className="py-2.5 px-3 text-center">ML Risk Score</th>
-                <th className="py-2.5 px-3 text-right">Action</th>
+                <th className="py-2.5 px-3">Proposed Project</th>
+                <th className="py-2.5 px-2.5">Category</th>
+                <th className="py-2.5 px-2.5">Designated Contractor</th>
+                <th className="py-2.5 px-2 text-right">Cost</th>
+                <th className="py-2.5 px-2 text-center">45d Clock</th>
+                <th className="py-2.5 px-2 text-center">ML Risk Score</th>
+                <th className="py-2.5 px-3 text-right">Triage Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-[#D9DDE3] font-mono">
               {sortedSanctions.map((s) => (
                 <tr
                   key={s.id}
-                  className="hover:bg-slate-800/30 transition text-slate-200"
+                  className="hover:bg-[#F0F2F5] transition-colors text-[#17202A]"
                 >
-                  <td className="py-3 px-3 font-semibold text-white">
-                    {s.work}
+                  <td className="py-2.5 px-3 font-sans">
+                    <div className="font-semibold text-[#17202A]">{s.work}</div>
+                    <div className="text-[10px] text-[#7A838E]">ID: {s.id}</div>
                   </td>
-                  <td className="py-3 px-3 text-xs text-slate-400">
+                  <td className="py-2.5 px-2.5 font-sans text-[11px] text-[#5B6470]">
                     {s.category}
                   </td>
-                  <td className="py-3 px-3">
+                  <td className="py-2.5 px-2.5 font-sans">
                     <button
                       onClick={() => handleReviewVendor(s.vendorId)}
-                      className="text-xs font-medium text-sky-400 hover:underline flex items-center gap-1 group"
+                      className="text-xs font-semibold text-blue-600 hover:underline flex items-center gap-1 group text-left"
                     >
                       {s.vendor}
-                      <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition" />
+                      <ArrowRight className="h-2.5 w-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </button>
                   </td>
-                  <td className="py-3 px-3 text-right font-mono font-semibold">
+                  <td className="py-2.5 px-2 text-right font-bold text-[#17202A] tabular-nums">
                     ₹{s.amountCr.toFixed(2)} Cr
                   </td>
-                  <td className="py-3 px-3 text-center">
+                  <td className="py-2.5 px-2 text-center">
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold font-mono ${
+                      className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold ${
                         s.daysRemaining <= 10
-                          ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                          ? "bg-red-50 text-red-700 border border-red-200"
                           : s.daysRemaining <= 20
-                          ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                          : "bg-slate-800 text-slate-300"
+                          ? "bg-amber-50 text-amber-800 border border-amber-200"
+                          : "bg-[#F0F2F5] text-[#5B6470] border border-[#D9DDE3]"
                       }`}
                     >
-                      <Clock className="h-3 w-3" />
+                      <Clock className="h-2.5 w-2.5" />
                       {s.daysRemaining}d left
                     </span>
                   </td>
-                  <td className="py-3 px-3 text-center">
-                    <Badge tone={riskTone(s.risk)}>
+                  <td className="py-2.5 px-2 text-center">
+                    <Badge tone={riskTone(s.risk)} className="text-[9px] px-1 py-0">
                       {riskLabel(s.risk)} {s.risk}
                     </Badge>
                   </td>
-                  <td className="py-3 px-3 text-right space-x-1">
+                  <td className="py-2.5 px-3 text-right font-sans space-x-1.5">
                     <Link
                       to="/spatial"
-                      className="inline-block rounded-md bg-slate-800 hover:bg-slate-700 px-2.5 py-1 text-xs text-sky-300 font-medium transition"
+                      className="inline-block rounded border border-[#D9DDE3] bg-white hover:bg-[#F0F2F5] px-2 py-0.5 text-[10px] text-blue-700 font-semibold transition-colors shadow-xs"
                     >
-                      Verify Spatial
+                      Verify Geo
                     </Link>
                   </td>
                 </tr>

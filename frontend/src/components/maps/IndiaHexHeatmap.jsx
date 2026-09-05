@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import * as d3 from "d3";
-import { X, AlertTriangle, Shield, MapPin } from "lucide-react";
+import { X, AlertTriangle, MapPin } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import {
   getNationalGeography,
@@ -105,29 +105,33 @@ export function IndiaHexHeatmap() {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-[#090e1b] shadow-2xl">
-      {/* Top Map Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 bg-slate-900/80 p-3 sm:px-4 backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <Shield className="h-4 w-4 text-sky-400" />
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
-            India National Risk Choropleth & GIS
-          </span>
-          <span className="hidden md:inline-flex items-center gap-1 rounded bg-sky-500/10 px-2 py-0.5 text-[10px] font-mono text-sky-400 border border-sky-500/20">
-            Survey of India Administrative Boundaries
-          </span>
+    <div className="rounded border border-[#D9DDE3] bg-white shadow-sm overflow-hidden">
+      {/* Top Header & Layer Toolbar */}
+      <div className="p-3 sm:p-4 border-b border-[#D9DDE3] bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded-sm border border-blue-200">
+              NATIONAL GIS SURFACE
+            </span>
+            <h2 className="text-sm sm:text-base font-semibold text-[#17202A]">
+              India National Geographic Risk Heatmap (MoSPI Nodal Oversight)
+            </h2>
+          </div>
+          <p className="text-xs text-[#5B6470] mt-0.5">
+            Survey of India boundary dataset. Click any state or flagged constituency to inspect risk factors, capital utilisation, and anomalous works.
+          </p>
         </div>
 
         {/* Metric Layer Selector Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-950/90 p-1">
+        <div className="flex flex-wrap items-center gap-1 rounded-sm border border-[#D9DDE3] bg-[#F0F2F5] p-0.5">
           {metricLayers.map((l) => (
             <button
               key={l.id}
               onClick={() => setMetricLayer(l.id)}
-              className={`rounded-md px-2.5 py-1 text-xs font-semibold transition ${
+              className={`rounded-sm px-2.5 py-1 text-xs font-semibold transition-colors ${
                 metricLayer === l.id
-                  ? "bg-sky-500 text-slate-950 shadow-sm"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                  ? "bg-white text-blue-700 shadow-sm border border-[#D9DDE3]"
+                  : "text-[#5B6470] hover:text-[#17202A]"
               }`}
               title={l.desc}
             >
@@ -140,7 +144,7 @@ export function IndiaHexHeatmap() {
       {/* Main Content Area: Map Viewport on Left, Side-by-Side Inspection Panel on Right */}
       <div className="relative flex flex-col min-[1360px]:flex-row items-stretch">
         {/* Left/Main Column: Unobstructed Map Viewport + Dedicated Legend Bar */}
-        <div className="flex-1 min-w-0 flex flex-col bg-[#090e1b]">
+        <div className="flex-1 min-w-0 flex flex-col bg-[#F8FAFC]">
           {/* SVG GIS Canvas Container - Dedicated Unobstructed Viewport */}
           <div
             ref={mapContainerRef}
@@ -155,22 +159,6 @@ export function IndiaHexHeatmap() {
                 onMouseMove={handleMouseMove}
                 onMouseLeave={() => setHoveredFeature(null)}
               >
-          <defs>
-            {/* Background cartographic ambient glow */}
-            <radialGradient id="nationalGlow" cx="50%" cy="48%" r="65%">
-              <stop offset="0%" stopColor="rgba(14, 165, 233, 0.08)" />
-              <stop offset="60%" stopColor="rgba(15, 23, 42, 0.3)" />
-              <stop offset="100%" stopColor="transparent" />
-            </radialGradient>
-            {/* Subtle grid pattern */}
-            <pattern id="geoGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.015)" strokeWidth="0.8" />
-            </pattern>
-          </defs>
-
-          <rect width={width} height={height} fill="url(#nationalGlow)" />
-          <rect width={width} height={height} fill="url(#geoGrid)" />
-
           {/* Real India State Boundary Paths */}
           <g className="states-layer">
             {geoData.features.map((feature, idx) => {
@@ -190,8 +178,8 @@ export function IndiaHexHeatmap() {
                   key={feature.id || `${stateName}-${idx}`}
                   d={pathD}
                   fill={fillColor}
-                  stroke={isSelectedState ? "#38bdf8" : isHovered ? "#ffffff" : "rgba(255, 255, 255, 0.18)"}
-                  strokeWidth={isSelectedState ? 2.2 : isHovered ? 1.5 : 0.75}
+                  stroke={isSelectedState ? "#2563EB" : isHovered ? "#17202A" : "#FFFFFF"}
+                  strokeWidth={isSelectedState ? 2.5 : isHovered ? 1.5 : 0.8}
                   strokeLinejoin="round"
                   strokeLinecap="round"
                   className="cursor-pointer transition-all duration-150"
@@ -242,14 +230,14 @@ export function IndiaHexHeatmap() {
                       })
                     }
                   >
-                    {/* Animated Ping Ring for Bhopal / Critical */}
+                    {/* Animated Ping Ring for Bhopal / Selected */}
                     {isSelected && (
                       <circle
                         cx={cx}
                         cy={cy}
                         r="14"
                         fill="none"
-                        stroke="#38bdf8"
+                        stroke="#2563EB"
                         strokeWidth="2"
                         strokeDasharray="3 3"
                         className="animate-spin-slow"
@@ -261,22 +249,25 @@ export function IndiaHexHeatmap() {
                       cx={cx}
                       cy={cy}
                       r={isSelected ? 6 : isCritical ? 4.5 : 3.5}
-                      fill={isCritical ? "#f43f5e" : "#0ea5e9"}
+                      fill={isCritical ? "#DC2626" : "#2563EB"}
                       stroke="#ffffff"
                       strokeWidth={isSelected ? 2 : 1}
-                      className="drop-shadow-lg"
+                      className="shadow-sm"
                     />
 
-                    {/* Constituency Label */}
+                    {/* Constituency Label with crisp white stroke halo for light mode readability */}
                     {(isSelected || isCritical || c.name === "Bhopal") && (
                       <text
                         x={cx}
                         y={cy - 8}
                         textAnchor="middle"
-                        fill="#ffffff"
+                        fill="#17202A"
+                        stroke="#FFFFFF"
+                        strokeWidth="3"
+                        paintOrder="stroke fill"
                         fontSize="9"
                         fontWeight="700"
-                        className="pointer-events-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
+                        className="pointer-events-none"
                       >
                         {c.name}
                       </text>
@@ -291,49 +282,49 @@ export function IndiaHexHeatmap() {
         {/* Interactive Floating Hover Tooltip */}
         {hoveredFeature && (
           <div
-            className="pointer-events-none absolute z-30 rounded-xl border border-slate-700 bg-slate-950/95 p-3 shadow-2xl backdrop-blur-xl text-xs space-y-1.5 transition-all duration-75"
+            className="pointer-events-none absolute z-30 rounded-sm border border-[#D9DDE3] bg-white p-2.5 shadow-lg text-xs space-y-1 transition-all duration-75"
             style={{
               left: tooltipPos.x,
               top: tooltipPos.y,
             }}
           >
-            <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-1.5">
-              <span className="font-bold text-white text-sm">
+            <div className="flex items-center justify-between gap-3 border-b border-[#D9DDE3] pb-1">
+              <span className="font-bold text-[#17202A] text-xs">
                 {hoveredFeature.properties.name}
               </span>
               <Badge tone={riskTone(hoveredFeature.properties.risk)}>
-                Risk {hoveredFeature.properties.risk}/100
+                Risk {hoveredFeature.properties.risk}
               </Badge>
             </div>
 
             {hoveredFeature.properties.mpName && (
-              <p className="text-[11px] text-sky-400 font-medium">
+              <p className="text-[10px] text-blue-700 font-medium">
                 MP: {hoveredFeature.properties.mpName}
               </p>
             )}
 
-            <div className="grid grid-cols-2 gap-2 font-mono text-[11px] pt-1">
+            <div className="grid grid-cols-2 gap-2 font-mono text-[10px] pt-0.5">
               <div>
-                <span className="text-slate-400">Utilisation:</span>{" "}
-                <strong className="text-emerald-400 font-bold">
+                <span className="text-[#7A838E]">Utilisation:</span>{" "}
+                <strong className="text-emerald-700 font-bold tabular-nums">
                   {hoveredFeature.properties.utilisation}%
                 </strong>
               </div>
               <div>
-                <span className="text-slate-400">Completion:</span>{" "}
-                <strong className="text-sky-400 font-bold">
+                <span className="text-[#7A838E]">Completion:</span>{" "}
+                <strong className="text-blue-700 font-bold tabular-nums">
                   {hoveredFeature.properties.completion}%
                 </strong>
               </div>
               <div>
-                <span className="text-slate-400">Alerts:</span>{" "}
-                <strong className="text-rose-400 font-bold">
-                  {hoveredFeature.properties.alerts} Flagged
+                <span className="text-[#7A838E]">Alerts:</span>{" "}
+                <strong className="text-red-700 font-bold tabular-nums">
+                  {hoveredFeature.properties.alerts}
                 </strong>
               </div>
               <div>
-                <span className="text-slate-400">Layer:</span>{" "}
-                <span className="text-slate-200 uppercase font-semibold">
+                <span className="text-[#7A838E]">Layer:</span>{" "}
+                <span className="text-[#17202A] uppercase font-semibold">
                   {metricLayer}
                 </span>
               </div>
@@ -344,38 +335,38 @@ export function IndiaHexHeatmap() {
           </div>
 
           {/* Dedicated Non-Overlapping Legend & Controls Bar */}
-          <div className="border-t border-slate-800/80 bg-slate-950/85 px-4 py-2.5 backdrop-blur-md">
-            <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="border-t border-[#D9DDE3] bg-white px-3.5 py-2">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 text-xs">
               {/* Metric & Swatches */}
               <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#7A838E]">
                   {metricLayers.find((l) => l.id === metricLayer)?.label}:
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-4 rounded bg-rose-500 shadow-sm shadow-rose-500/30 shrink-0" />
-                  <span className="text-slate-300 text-[11px] font-medium">High Risk (≥ 70)</span>
+                  <span className="h-2 w-3 rounded-sm bg-red-600 shrink-0" />
+                  <span className="text-[#5B6470] text-[10px] font-medium">High Risk (≥ 70)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-4 rounded bg-amber-500 shadow-sm shadow-amber-500/30 shrink-0" />
-                  <span className="text-slate-300 text-[11px]">Elevated (45–69)</span>
+                  <span className="h-2 w-3 rounded-sm bg-amber-500 shrink-0" />
+                  <span className="text-[#5B6470] text-[10px]">Elevated (45–69)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-4 rounded bg-emerald-500 shadow-sm shadow-emerald-500/30 shrink-0" />
-                  <span className="text-slate-300 text-[11px]">Compliant (&lt; 45)</span>
+                  <span className="h-2 w-3 rounded-sm bg-slate-300 shrink-0" />
+                  <span className="text-[#5B6470] text-[10px]">Compliant (&lt; 45)</span>
                 </div>
               </div>
 
               {/* Pin Toggle & Hint */}
-              <div className="flex items-center gap-3 ml-auto">
-                <span className="hidden md:inline text-[11px] text-slate-400">
-                  Click <strong className="text-slate-200">Madhya Pradesh</strong> or pin to inspect
+              <div className="flex items-center gap-2.5 ml-auto">
+                <span className="hidden md:inline text-[10px] text-[#7A838E]">
+                  Click <strong className="text-[#17202A]">Madhya Pradesh</strong> or pin to inspect
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowConstituencyPins(!showConstituencyPins)}
-                  className="text-[11px] text-sky-400 hover:text-sky-300 flex items-center gap-1 font-medium bg-sky-500/10 hover:bg-sky-500/20 px-2.5 py-1 rounded-md border border-sky-500/20 transition cursor-pointer"
+                  className="text-[10px] text-blue-700 hover:text-blue-800 flex items-center gap-1 font-semibold bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-sm border border-blue-200 transition-colors cursor-pointer"
                 >
-                  <MapPin className="h-3.5 w-3.5" />
+                  <MapPin className="h-3 w-3" />
                   {showConstituencyPins ? "Hide Pins" : "Show Pins"}
                 </button>
               </div>
@@ -383,92 +374,92 @@ export function IndiaHexHeatmap() {
           </div>
         </div>
 
-        {/* Side-by-Side (Desktop) or Stacked Below (Smaller Desktop / Tablet) Inspection Panel */}
+        {/* Side-by-Side Inspection Panel */}
         {selectedConstituency && (
-          <div className="w-full min-[1360px]:w-[380px] shrink-0 border-t min-[1360px]:border-t-0 min-[1360px]:border-l border-slate-800 bg-[#0c1220]/98 p-5 backdrop-blur-2xl shadow-2xl min-[1360px]:overflow-y-auto min-[1360px]:max-h-[740px] transition-all">
-          <div className="space-y-4">
+          <div className="w-full min-[1360px]:w-[360px] shrink-0 border-t min-[1360px]:border-t-0 min-[1360px]:border-l border-[#D9DDE3] bg-white p-4 min-[1360px]:overflow-y-auto min-[1360px]:max-h-[740px]">
+          <div className="space-y-3.5">
             <div className="flex items-start justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#7A838E]">
                   {selectedConstituency.state} · {selectedConstituency.district}
                 </span>
-                <h2 className="text-xl font-bold text-white mt-0.5">
+                <h2 className="text-base font-bold text-[#17202A] mt-0.5">
                   {selectedConstituency.name}
                 </h2>
-                <p className="text-xs text-sky-400 font-medium">
+                <p className="text-xs text-blue-700 font-medium">
                   MP: {selectedConstituency.mpName}
                 </p>
               </div>
               <button
                 onClick={() => setSelectedConstituencyId(null)}
-                className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+                className="rounded-sm p-1 text-[#7A838E] hover:bg-gray-100 hover:text-[#17202A] transition-colors"
                 title="Close Panel"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
 
             {/* Status badges */}
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5">
               <Badge tone={riskTone(selectedConstituency.risk)}>
-                Composite Risk: {selectedConstituency.risk}/100 ({riskLabel(selectedConstituency.risk)})
+                Risk: {selectedConstituency.risk}/100 ({riskLabel(selectedConstituency.risk)})
               </Badge>
               <Badge tone={selectedConstituency.alerts > 8 ? "critical" : "info"}>
-                {selectedConstituency.alerts} Flagged Alerts
+                {selectedConstituency.alerts} Active Alerts
               </Badge>
             </div>
 
             {/* Key Metric Grid */}
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-3">
-                <span className="text-slate-400">Fund Utilisation</span>
-                <div className="text-lg font-bold text-emerald-400 font-mono mt-0.5">
+              <div className="rounded-sm border border-[#D9DDE3] bg-[#F0F2F5] p-2.5">
+                <span className="text-[10px] uppercase tracking-wider text-[#7A838E] font-bold">Fund Utilisation</span>
+                <div className="text-base font-bold text-emerald-700 font-mono mt-0.5 tabular-nums">
                   {selectedConstituency.utilisation}%
                 </div>
               </div>
-              <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-3">
-                <span className="text-slate-400">Physical Completion</span>
-                <div className="text-lg font-bold text-sky-400 font-mono mt-0.5">
+              <div className="rounded-sm border border-[#D9DDE3] bg-[#F0F2F5] p-2.5">
+                <span className="text-[10px] uppercase tracking-wider text-[#7A838E] font-bold">Completion</span>
+                <div className="text-base font-bold text-blue-700 font-mono mt-0.5 tabular-nums">
                   {selectedConstituency.completion}%
                 </div>
               </div>
-              <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-3">
-                <span className="text-slate-400">Total Authorised</span>
-                <div className="text-lg font-bold text-white font-mono mt-0.5">
+              <div className="rounded-sm border border-[#D9DDE3] bg-[#F0F2F5] p-2.5">
+                <span className="text-[10px] uppercase tracking-wider text-[#7A838E] font-bold">Authorised</span>
+                <div className="text-base font-bold text-[#17202A] font-mono mt-0.5 tabular-nums">
                   ₹{selectedConstituency.totalFundsCr.toFixed(1)} Cr
                 </div>
               </div>
-              <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-3">
-                <span className="text-slate-400">Unspent Balance</span>
-                <div className="text-lg font-bold text-amber-400 font-mono mt-0.5">
+              <div className="rounded-sm border border-[#D9DDE3] bg-[#F0F2F5] p-2.5">
+                <span className="text-[10px] uppercase tracking-wider text-[#7A838E] font-bold">Unspent</span>
+                <div className="text-base font-bold text-amber-700 font-mono mt-0.5 tabular-nums">
                   ₹{selectedConstituency.unspentCr.toFixed(1)} Cr
                 </div>
               </div>
             </div>
 
             {/* Top Flagged Risk Factors */}
-            <div className="space-y-2 rounded-xl border border-slate-800/80 bg-slate-900/40 p-3 text-xs">
-              <span className="font-semibold uppercase tracking-wider text-slate-400 text-[10px]">
-                Dominant Risk Factors (AI Flagged)
+            <div className="space-y-1.5 rounded-sm border border-[#D9DDE3] bg-[#F0F2F5] p-2.5 text-xs">
+              <span className="font-bold uppercase tracking-wider text-[#7A838E] text-[10px]">
+                Dominant AI Anomaly Signatures
               </span>
-              <ul className="space-y-1.5 text-slate-300">
+              <ul className="space-y-1 text-[#17202A] text-xs">
                 <li className="flex items-center gap-1.5">
-                  <AlertTriangle className="h-3.5 w-3.5 text-rose-400 shrink-0" />
+                  <AlertTriangle className="h-3.5 w-3.5 text-red-600 shrink-0" />
                   <span>Vendor cartel collusion: Aarav Infra & Narmada Civil</span>
                 </li>
                 <li className="flex items-center gap-1.5">
-                  <AlertTriangle className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-                  <span>Spatial duplicate asset flagged in Berasia (180m cell)</span>
+                  <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                  <span>Spatial duplicate asset in Berasia (180m cell)</span>
                 </li>
                 <li className="flex items-center gap-1.5">
-                  <AlertTriangle className="h-3.5 w-3.5 text-sky-400 shrink-0" />
+                  <AlertTriangle className="h-3.5 w-3.5 text-blue-600 shrink-0" />
                   <span>SC allocation shortfall (11.2% actual vs 15% mandate)</span>
                 </li>
               </ul>
             </div>
 
             {/* Connected Action Buttons for Demo Flow */}
-            <div className="space-y-2 pt-2 border-t border-slate-800">
+            <div className="space-y-1.5 pt-2 border-t border-[#D9DDE3]">
               <Button
                 variant="critical"
                 size="sm"
@@ -489,7 +480,7 @@ export function IndiaHexHeatmap() {
           </div>
         </div>
       )}
-    </div>
+      </div>
     </div>
   );
 }

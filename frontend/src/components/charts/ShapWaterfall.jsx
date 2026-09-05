@@ -13,7 +13,7 @@ import {
 
 export function ShapWaterfall({ data = [], height = 220 }) {
   if (!data || data.length === 0) {
-    return <div className="p-4 text-xs text-slate-500">No SHAP attribution data available.</div>;
+    return <div className="p-4 text-xs text-[#7A838E]">No SHAP attribution data available.</div>;
   }
 
   const formattedData = data.map((d) => {
@@ -33,11 +33,11 @@ export function ShapWaterfall({ data = [], height = 220 }) {
           layout="vertical"
           margin={{ top: 10, right: 24, left: 10, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
           <XAxis
             type="number"
-            tick={{ fill: "#94a3b8", fontSize: 11 }}
-            axisLine={{ stroke: "#334155" }}
+            tick={{ fill: "#5B6470", fontSize: 11 }}
+            axisLine={{ stroke: "#D9DDE3" }}
             tickLine={false}
             tickFormatter={(v) => (v > 0 ? `+${v}` : `${v}`)}
           />
@@ -45,8 +45,8 @@ export function ShapWaterfall({ data = [], height = 220 }) {
             type="category"
             dataKey="feature"
             width={180}
-            tick={{ fill: "#cbd5e1", fontSize: 11 }}
-            axisLine={{ stroke: "#334155" }}
+            tick={{ fill: "#17202A", fontSize: 11 }}
+            axisLine={{ stroke: "#D9DDE3" }}
             tickLine={false}
           />
           <Tooltip
@@ -54,11 +54,11 @@ export function ShapWaterfall({ data = [], height = 220 }) {
               if (active && payload && payload.length) {
                 const item = payload[0].payload;
                 return (
-                  <div className="rounded-lg border border-slate-700 bg-slate-900 p-2.5 text-xs shadow-xl">
-                    <p className="font-semibold text-slate-200">{item.feature}</p>
+                  <div className="rounded border border-[#D9DDE3] bg-white p-2 text-xs shadow-md">
+                    <p className="font-semibold text-[#17202A]">{item.feature}</p>
                     <p
-                      className={`mt-1 font-mono font-medium ${
-                        item.value >= 0 ? "text-rose-400" : "text-emerald-400"
+                      className={`mt-1 font-mono font-bold ${
+                        item.value >= 0 ? "text-red-600" : "text-emerald-700"
                       }`}
                     >
                       SHAP: {item.value >= 0 ? `+${item.value}` : item.value} ({item.impact})
@@ -69,12 +69,12 @@ export function ShapWaterfall({ data = [], height = 220 }) {
               return null;
             }}
           />
-          <ReferenceLine x={0} stroke="#64748b" strokeWidth={1.5} />
-          <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+          <ReferenceLine x={0} stroke="#9CA3AF" strokeWidth={1} />
+          <Bar dataKey="value" radius={[0, 2, 2, 0]}>
             {formattedData.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={entry.value >= 0 ? "#f43f5e" : "#10b981"}
+                fill={entry.value >= 0 ? "#DC2626" : "#16A34A"}
               />
             ))}
           </Bar>

@@ -28,9 +28,9 @@ export function AllocationDonut({ budget, height = 240 }) {
                 if (active && payload && payload.length) {
                   const item = payload[0].payload;
                   return (
-                    <div className="rounded-lg border border-slate-700 bg-slate-900 p-2 text-xs shadow-xl">
-                      <p className="font-semibold text-slate-200">{item.name}</p>
-                      <p className="mt-1 font-mono text-white">
+                    <div className="rounded border border-[#D9DDE3] bg-white p-2.5 text-xs shadow-md">
+                      <p className="font-semibold text-[#17202A]">{item.name}</p>
+                      <p className="mt-1 font-mono text-[#2563EB] font-bold">
                         ₹{item.value} Cr ({item.percent}%)
                       </p>
                     </div>
@@ -45,7 +45,7 @@ export function AllocationDonut({ budget, height = 240 }) {
               outerRadius="88%"
               paddingAngle={4}
               dataKey="value"
-              stroke="#0e1524"
+              stroke="#FFFFFF"
               strokeWidth={3}
             >
               {data.map((entry, index) => (
@@ -57,33 +57,33 @@ export function AllocationDonut({ budget, height = 240 }) {
 
         {/* Centre text overlay */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#7A838E]">
             Total Fund
           </span>
-          <span className="text-xl sm:text-2xl font-bold tracking-tight text-white font-mono">
+          <span className="text-xl sm:text-2xl font-bold tracking-tight text-[#17202A] font-mono">
             ₹{total.toFixed(1)} Cr
           </span>
-          <span className="text-[10px] text-slate-400">FY 2025-26</span>
+          <span className="text-[10px] text-[#5B6470]">FY 2025-26</span>
         </div>
       </div>
 
       {/* Legend & Breakdown */}
-      <div className="w-full sm:w-1/2 space-y-3">
+      <div className="w-full sm:w-1/2 space-y-2.5">
         {data.map((item) => (
           <div
             key={item.name}
-            className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-slate-900/40 p-2.5 text-xs"
+            className="flex items-center justify-between rounded border border-[#D9DDE3] bg-[#F0F2F5] p-2.5 text-xs"
           >
             <div className="flex items-center gap-2">
               <span
                 className="h-3 w-3 rounded-full shrink-0"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="font-medium text-slate-300">{item.name}</span>
+              <span className="font-medium text-[#17202A]">{item.name}</span>
             </div>
             <div className="text-right font-mono">
-              <span className="font-bold text-white">₹{item.value.toFixed(2)} Cr</span>
-              <span className="ml-1 text-[11px] text-slate-400">({item.percent}%)</span>
+              <span className="font-bold text-[#17202A]">₹{item.value.toFixed(2)} Cr</span>
+              <span className="ml-1 text-[11px] text-[#5B6470]">({item.percent}%)</span>
             </div>
           </div>
         ))}

@@ -11,31 +11,41 @@ export function StatMetric({
   className = "",
 }) {
   const tones = {
-    critical: "text-rose-400 border-rose-500/20 bg-rose-500/5",
-    elevated: "text-amber-400 border-amber-500/20 bg-amber-500/5",
-    normal: "text-emerald-400 border-emerald-500/20 bg-emerald-500/5",
-    info: "text-sky-400 border-sky-500/20 bg-sky-500/5",
-    neutral: "text-slate-100 border-slate-800 bg-slate-900/40",
+    critical: "border-red-200 bg-red-50/50",
+    elevated: "border-amber-200 bg-amber-50/50",
+    normal: "border-emerald-200 bg-emerald-50/50",
+    info: "border-blue-200 bg-blue-50/50",
+    neutral: "border-[#D9DDE3] bg-white",
+  };
+
+  const valTones = {
+    critical: "text-red-700",
+    elevated: "text-amber-700",
+    normal: "text-emerald-700",
+    info: "text-blue-700",
+    neutral: "text-[#17202A]",
   };
 
   return (
-    <div className={cn("rounded-xl border p-3 sm:p-4 transition", tones[tone], className)}>
+    <div className={cn("rounded border p-3 sm:p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-colors", tones[tone], className)}>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-slate-400">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[#7A838E]">
           {label}
         </span>
-        {Icon && <Icon className="h-4 w-4 opacity-70" />}
+        {Icon && <Icon className="h-3.5 w-3.5 opacity-60 text-[#7A838E]" />}
       </div>
-      <div className="mt-2 flex items-baseline gap-2">
-        <span className="text-2xl font-bold tracking-tight">{value}</span>
+      <div className="mt-1.5 flex items-baseline gap-2">
+        <span className={cn("text-xl sm:text-2xl font-bold font-mono tracking-tight tabular-nums", valTones[tone] || "text-[#17202A]")}>
+          {value}
+        </span>
         {trend && (
-          <span className="text-xs font-semibold">
+          <span className="text-xs font-semibold tracking-tight text-[#5B6470]">
             {trend}
           </span>
         )}
       </div>
       {subvalue && (
-        <p className="mt-1 text-xs text-slate-400">{subvalue}</p>
+        <p className="mt-1 text-xs text-[#5B6470] font-normal leading-tight">{subvalue}</p>
       )}
     </div>
   );

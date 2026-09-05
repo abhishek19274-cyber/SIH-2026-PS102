@@ -3,65 +3,61 @@
 @tailwind utilities;
 
 @layer base {
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
   body {
-    background-color: #080c14;
-    color: #e2e8f0;
+    background-color: #F5F6F8;
+    color: #17202A;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
-/* Custom scrollbars for command-centre look */
+/* Custom scrollbars for clean light command look */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #0b111e;
+  background: #F5F6F8;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 3px;
+  background: #D9DDE3;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #CBD5E1;
 }
 
-/* Leaflet map container and popup styling */
+/* Institutional Leaflet map container and popup styling (Light) */
 .leaflet-container {
-  background: #0f172a !important;
+  background: #EAEFF5 !important;
   font-family: inherit !important;
   z-index: 1;
 }
 
 .leaflet-popup-content-wrapper {
-  background: #0f172a !important;
-  color: #f1f5f9 !important;
-  border: 1px solid #334155 !important;
-  border-radius: 10px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6) !important;
+  background: #FFFFFF !important;
+  color: #17202A !important;
+  border: 1px solid #D9DDE3 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+  padding: 0 !important;
 }
 
 .leaflet-popup-tip {
-  background: #0f172a !important;
-  border: 1px solid #334155 !important;
+  background: #FFFFFF !important;
+  border: 1px solid #D9DDE3 !important;
 }
 
 .leaflet-popup-content {
-  margin: 10px 12px !important;
+  margin: 8px 12px !important;
   line-height: 1.4 !important;
 }
 
-/* Subtle glowing command badge */
-.badge-glow {
-  box-shadow: 0 0 12px currentColor;
-}
-
-/* Custom pulse for live indicators */
-@keyframes livePulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.92); }
-}
-
-.live-indicator {
-  animation: livePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Institutional data tables and tabular numerals */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }

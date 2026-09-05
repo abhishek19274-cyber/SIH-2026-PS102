@@ -82,18 +82,16 @@ export function getMetricValue(layer, metricObj) {
 }
 
 export function getMetricColor(layer, value) {
-  const t = Math.min(1, Math.max(0, value / 100));
   if (layer === "utilisation" || layer === "completion") {
-    // Higher is green (compliant), lower is amber/red
-    const g = Math.round(80 + t * 140);
-    const r = Math.round(200 - t * 150);
-    return `rgba(${r}, ${g}, 100, ${0.35 + t * 0.5})`;
+    // Higher is compliant (green), moderate is warning (amber), low is lag (red)
+    if (value >= 75) return "#86EFAC";
+    if (value >= 55) return "#FDE047";
+    return "#FCA5A5";
   }
-  // Risk & Alerts: Higher is red (anomaly), lower is slate/blue
-  const r = Math.round(130 + t * 125);
-  const g = Math.round(75 - t * 45);
-  const b = Math.round(110 - t * 70);
-  return `rgba(${r}, ${g}, ${b}, ${0.35 + t * 0.55})`;
+  // Risk & Alerts: Higher is critical (red), moderate is elevated (amber), lower is compliant (slate)
+  if (value >= 70) return "#F87171";
+  if (value >= 45) return "#FBBF24";
+  return "#CBD5E1";
 }
 
 export function getConstituencyPins() {

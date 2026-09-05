@@ -151,13 +151,13 @@ export function SpatialHexMap({
   const activeBasemap = BASEMAP_CONFIGS[selectedBasemap] || BASEMAP_CONFIGS.osm;
 
   return (
-    <div className="space-y-2">
-      {/* Restrained Operational GIS Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-900/90 border border-slate-800 rounded-xl px-3.5 py-2">
+    <div className="relative overflow-hidden rounded border border-[#D9DDE3] bg-white shadow-sm">
+      {/* High-Density GIS Layer Control Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-[#D9DDE3] bg-[#F8FAFC] p-2.5 sm:px-3.5">
         {/* Layer Toggles */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-slate-400 text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1 mr-1">
-            <Layers className="h-3.5 w-3.5 text-sky-400" />
+          <span className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-[#7A838E]">
+            <Layers className="h-3.5 w-3.5 text-blue-600" />
             Layers:
           </span>
 
@@ -167,13 +167,13 @@ export function SpatialHexMap({
               setLayers((s) => ({ ...s, existingMplads: !s.existingMplads }))
             }
             className={cn(
-              "rounded-lg border px-2.5 py-1 text-xs font-medium transition flex items-center gap-1.5",
+              "rounded-sm border px-2.5 py-1 text-xs font-semibold transition-colors flex items-center gap-1.5",
               layers.existingMplads
-                ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
-                : "border-slate-800 bg-slate-950/60 text-slate-500 hover:text-slate-400"
+                ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                : "border-[#D9DDE3] bg-white text-[#5B6470] hover:text-[#17202A]"
             )}
           >
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
             Existing Assets ({existingAssets.length})
           </button>
 
@@ -183,14 +183,14 @@ export function SpatialHexMap({
               setLayers((s) => ({ ...s, ecoBuffers: !s.ecoBuffers }))
             }
             className={cn(
-              "rounded-lg border px-2.5 py-1 text-xs font-medium transition flex items-center gap-1.5",
+              "rounded-sm border px-2.5 py-1 text-xs font-semibold transition-colors flex items-center gap-1.5",
               layers.ecoBuffers
-                ? "border-amber-500/50 bg-amber-500/15 text-amber-300"
-                : "border-slate-800 bg-slate-950/60 text-slate-500 hover:text-slate-400"
+                ? "border-amber-300 bg-amber-50 text-amber-800"
+                : "border-[#D9DDE3] bg-white text-[#5B6470] hover:text-[#17202A]"
             )}
           >
-            <span className="h-2 w-2 rounded-full bg-amber-400" />
-            Eco-Conservation Buffer
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-600" />
+            Eco Buffer
           </button>
 
           <button
@@ -199,13 +199,13 @@ export function SpatialHexMap({
               setLayers((s) => ({ ...s, corridors: !s.corridors }))
             }
             className={cn(
-              "rounded-lg border px-2.5 py-1 text-xs font-medium transition flex items-center gap-1.5",
+              "rounded-sm border px-2.5 py-1 text-xs font-semibold transition-colors flex items-center gap-1.5",
               layers.corridors
-                ? "border-sky-500/50 bg-sky-500/15 text-sky-300"
-                : "border-slate-800 bg-slate-950/60 text-slate-500 hover:text-slate-400"
+                ? "border-blue-300 bg-blue-50 text-blue-800"
+                : "border-[#D9DDE3] bg-white text-[#5B6470] hover:text-[#17202A]"
             )}
           >
-            <span className="h-1.5 w-3 bg-sky-400 rounded-sm" />
+            <span className="h-1 w-2.5 bg-blue-600 rounded-sm" />
             Freight Corridor
           </button>
 
@@ -218,42 +218,42 @@ export function SpatialHexMap({
               }))
             }
             className={cn(
-              "rounded-lg border px-2.5 py-1 text-xs font-medium transition flex items-center gap-1.5",
+              "rounded-sm border px-2.5 py-1 text-xs font-semibold transition-colors flex items-center gap-1.5",
               layers.proximityBuffer
-                ? "border-indigo-500/50 bg-indigo-500/15 text-indigo-300"
-                : "border-slate-800 bg-slate-950/60 text-slate-500 hover:text-slate-400"
+                ? "border-blue-300 bg-blue-50 text-blue-800"
+                : "border-[#D9DDE3] bg-white text-[#5B6470] hover:text-[#17202A]"
             )}
           >
-            <span className="h-2 w-2 rounded-full border border-indigo-400" />
-            200m Proximity Ring
+            <span className="h-1.5 w-1.5 rounded-full border border-blue-600" />
+            200m Buffer Ring
           </button>
         </div>
 
         {/* Basemap Selection & Interaction Hint */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400">
-            <Map className="h-3.5 w-3.5 text-slate-400" />
-            <span className="text-[11px] font-medium">Basemap:</span>
+          <div className="flex items-center gap-1.5 text-xs text-[#5B6470]">
+            <Map className="h-3.5 w-3.5 text-[#7A838E]" />
+            <span className="text-[10px] font-medium uppercase text-[#7A838E]">Basemap:</span>
             <select
               value={selectedBasemap}
               onChange={(e) => setSelectedBasemap(e.target.value)}
-              className="rounded-lg border border-slate-800 bg-slate-950 px-2 py-0.5 text-xs text-slate-200 focus:border-sky-500 focus:outline-none"
+              className="rounded-sm border border-[#D9DDE3] bg-white px-2 py-0.5 text-xs text-[#17202A] focus:border-blue-600 focus:outline-none"
             >
               <option value="osm">OpenStreetMap</option>
               <option value="esriStreet">Esri World Street</option>
             </select>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1 text-[11px] text-slate-400 font-mono">
-            <Navigation className="h-3 w-3 text-sky-400" />
-            <span>Click map or drag pin</span>
+          <div className="hidden sm:flex items-center gap-1 text-[10px] text-[#5B6470] font-mono">
+            <Navigation className="h-3 w-3 text-blue-600" />
+            <span>Click map / drag pin</span>
           </div>
         </div>
       </div>
 
       {/* Dominant Leaflet GIS Map Canvas */}
       <div
-        className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-inner z-0"
+        className="relative overflow-hidden bg-[#EAEFF5] z-0"
         style={{ height }}
       >
         <MapContainer
@@ -443,40 +443,40 @@ export function SpatialHexMap({
         </MapContainer>
 
         {/* GPS Coordinates & Cell ID Readout - Bottom Left */}
-        <div className="absolute bottom-3 left-3 z-[1000] rounded-xl border border-slate-800 bg-slate-950/90 px-3 py-2 text-[11px] font-mono text-slate-300 shadow-md">
-          <div className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">
+        <div className="absolute bottom-2.5 left-2.5 z-[1000] rounded-sm border border-[#D9DDE3] bg-white/95 px-2.5 py-1.5 text-[10px] font-mono text-[#17202A] shadow-md backdrop-blur-sm">
+          <div className="text-[8px] uppercase tracking-wider text-[#7A838E] font-bold">
             Target Coordinates
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-white font-bold">
+          <div className="flex items-center gap-2.5 mt-0.5">
+            <span className="text-[#17202A] font-bold tabular-nums">
               {proposedCoords.lat.toFixed(5)}° N, {proposedCoords.lng.toFixed(5)}° E
             </span>
-            <span className="text-sky-400 font-semibold">
-              H3 Res-9: #{conflictData?.h3CellId || "89a12c8b3"}
+            <span className="text-blue-700 font-semibold">
+              H3: #{conflictData?.h3CellId || "89a12c8b3"}
             </span>
           </div>
         </div>
 
         {/* Map Legend - Bottom Right */}
-        <div className="absolute bottom-3 right-3 z-[1000] rounded-xl border border-slate-800 bg-slate-950/90 p-2.5 text-[10px] space-y-1 shadow-md text-slate-300">
-          <div className="font-bold text-slate-400 uppercase tracking-wider">
-            Legend
+        <div className="absolute bottom-2.5 right-2.5 z-[1000] rounded-sm border border-[#D9DDE3] bg-white/95 p-2 text-[9px] font-mono space-y-1 shadow-md text-[#5B6470] backdrop-blur-sm">
+          <div className="font-bold text-[#7A838E] uppercase tracking-wider text-[8px]">
+            GIS Legend
           </div>
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full border border-white bg-rose-500" />
-            <span>Proposed Project Pin</span>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full border border-white bg-red-600 shrink-0" />
+            <span className="text-[#17202A]">Target Proposal Pin</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          <div className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 shrink-0" />
             <span>Completed Asset</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-sky-400" />
-            <span>In Progress Asset</span>
+          <div className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />
+            <span>In-Progress Asset</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="h-1.5 w-3 border-t border-dashed border-amber-400" />
-            <span>Eco Conservation Zone</span>
+          <div className="flex items-center gap-1.5">
+            <span className="h-1 w-2.5 border-t border-dashed border-amber-500 shrink-0" />
+            <span>Eco Buffer (200m)</span>
           </div>
         </div>
       </div>

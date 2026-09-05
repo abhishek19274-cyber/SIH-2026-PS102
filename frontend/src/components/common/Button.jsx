@@ -11,20 +11,20 @@ export function Button({
   ...props
 }) {
   const variants = {
-    primary: "bg-sky-600 text-white hover:bg-sky-500 border border-sky-400/30 shadow-sm",
-    success: "bg-emerald-600/90 text-white hover:bg-emerald-500 border border-emerald-400/30",
-    critical: "bg-rose-600/90 text-white hover:bg-rose-500 border border-rose-400/30",
-    elevated: "bg-amber-600/90 text-white hover:bg-amber-500 border border-amber-400/30",
-    outline: "bg-transparent text-slate-200 border border-slate-700 hover:bg-slate-800/60 hover:text-white",
-    ghost: "bg-transparent text-slate-400 hover:bg-slate-800/40 hover:text-slate-100",
-    subtle: "bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700/60",
+    primary: "bg-blue-600 text-white hover:bg-blue-700 border border-blue-700 shadow-sm",
+    success: "bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-700 shadow-sm",
+    critical: "bg-red-600 text-white hover:bg-red-700 border border-red-700 shadow-sm",
+    elevated: "bg-amber-600 text-white hover:bg-amber-700 border border-amber-700 shadow-sm",
+    outline: "bg-white text-[#17202A] border border-[#D9DDE3] hover:bg-[#F0F2F5] hover:border-slate-400 shadow-sm",
+    ghost: "bg-transparent text-[#5B6470] hover:bg-[#F0F2F5] hover:text-[#17202A]",
+    subtle: "bg-[#F0F2F5] text-[#17202A] hover:bg-[#E5E7EB] border border-[#D9DDE3]",
   };
 
   const sizes = {
-    xs: "px-2 py-1 text-xs rounded-md",
-    sm: "px-3 py-1.5 text-xs rounded-lg font-medium",
-    md: "px-4 py-2 text-sm rounded-lg font-medium",
-    lg: "px-5 py-2.5 text-base rounded-xl font-medium",
+    xs: "px-2 py-0.5 text-xs rounded-sm font-medium",
+    sm: "px-2.5 py-1 text-xs rounded font-medium",
+    md: "px-3.5 py-1.5 text-xs font-semibold rounded",
+    lg: "px-4 py-2 text-sm font-semibold rounded",
   };
 
   return (

@@ -48,129 +48,150 @@ export function MpDashboard() {
       subtitle="Transparent portfolio monitoring: ₹5.00 Cr annual allocation, project pipeline, and XGBoost completion forecasts"
     >
       {/* Top Split: ₹5 Cr Allocation Donut & Bottleneck Identifier */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Donut Card */}
         <Card className="space-y-2">
-          <CardTitle rightElement={<Badge tone="normal">FY 2025-26 Budget</Badge>}>
-            ₹5 Crore Budget Allocation
-          </CardTitle>
-          <CardHint>
-            Breakdown of ₹5.00 Cr parliamentary entitlement: disbursed vs committed vs uncommitted balance.
-          </CardHint>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200 font-semibold">
+                  ENTITLEMENT LEDGER
+                </span>
+                <h3 className="text-sm font-semibold text-[#17202A]">
+                  ₹5.00 Crore Annual Parliamentary Allocation
+                </h3>
+              </div>
+              <p className="text-xs text-[#5B6470] mt-1">
+                FY 2025-26 statutory entitlement: disbursed funds vs sanctioned commitments vs available unallocated balance.
+              </p>
+            </div>
+            <Badge tone="normal" className="font-mono text-[10px]">FY 2025-26</Badge>
+          </div>
           <div className="pt-2">
             <AllocationDonut budget={mpData?.budget} height={230} />
           </div>
         </Card>
 
         {/* Bottleneck Identifier Card */}
-        <Card className="space-y-3">
-          <div className="flex items-center justify-between">
-            <CardTitle>Sanction Bottleneck Identifier</CardTitle>
-            <Badge tone={criticalDelays.length > 0 ? "critical" : "normal"}>
-              {delayedWorks.length} Total Delays
+        <Card noPadding className="border-[#D9DDE3] flex flex-col">
+          <div className="p-3.5 border-b border-[#D9DDE3] flex items-center justify-between bg-[#F0F2F5]">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200 font-semibold">
+                  ADMIN BOTTLENECKS
+                </span>
+                <h3 className="text-sm font-semibold text-[#17202A]">
+                  Sanction Bottleneck Identifier
+                </h3>
+              </div>
+              <p className="text-[11px] text-[#5B6470] mt-0.5">
+                Automated detection of proposals exceeding the 45-day statutory clearance window.
+              </p>
+            </div>
+            <Badge tone={criticalDelays.length > 0 ? "critical" : "normal"} className="font-mono text-[10px]">
+              {delayedWorks.length} DELAYED WORKS
             </Badge>
           </div>
-          <CardHint>
-            Automated alerts highlighting administrative bottlenecks exceeding the 45-day statutory sanction window.
-          </CardHint>
 
-          {criticalDelays.length > 0 && (
-            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-sm font-semibold text-rose-200">
-                  {criticalDelays.length} Work(s) Waiting for DA Sanction &gt; 30 Days
-                </h4>
-                <p className="text-xs text-rose-300/80 mt-0.5">
-                  District Authority clearance lagging statutory guidelines. Immediate escalation recommended.
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-2 max-h-[170px] overflow-y-auto pr-1">
-            {delayedWorks.map((p) => (
-              <div
-                key={p.id}
-                className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-900/60 text-xs"
-              >
+          <div className="p-3 space-y-2.5 flex-1 flex flex-col justify-between">
+            {criticalDelays.length > 0 && (
+              <div className="rounded border border-red-200 bg-red-50 p-2.5 flex items-start gap-2.5">
+                <AlertCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-semibold text-slate-200">{p.name}</div>
-                  <div className="text-[11px] text-slate-400">
-                    Stage: <span className="text-amber-300 font-medium">{p.stage}</span> · Target {p.expectedDate}
+                  <h4 className="text-xs font-semibold text-red-900">
+                    {criticalDelays.length} Work(s) Exceeding 30 Days in Recommended Stage
+                  </h4>
+                  <p className="text-[11px] text-red-700 mt-0.5 leading-tight">
+                    District Authority sanction overdue. Formal MP expedited clarification advised under MPLADS Rule 3.2.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1.5 max-h-[165px] overflow-y-auto pr-1">
+              {delayedWorks.map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center justify-between p-2 rounded border border-[#D9DDE3] bg-[#F0F2F5] text-xs hover:border-slate-400 transition"
+                >
+                  <div className="space-y-0.5">
+                    <div className="font-medium text-[#17202A] text-xs">{p.name}</div>
+                    <div className="text-[10px] text-[#5B6470] font-mono">
+                      Phase: <span className="text-amber-700 font-semibold">{p.stage}</span> · Target: {p.expectedDate}
+                    </div>
+                  </div>
+                  <div className="text-right font-mono">
+                    <span className="font-bold text-red-600 text-xs tabular-nums">
+                      +{p.delayDays}d overdue
+                    </span>
+                    <div className="text-[10px] text-[#5B6470] tabular-nums font-semibold">₹{p.amountCr} Cr</div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className="font-mono font-bold text-rose-400">
-                    +{p.delayDays}d overdue
-                  </span>
-                  <div className="text-[10px] text-slate-500 font-mono">₹{p.amountCr} Cr</div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </Card>
       </div>
 
       {/* Project Lifecycle Pipeline (Kanban-Style) */}
-      <Card className="space-y-4">
-        <div className="flex items-center justify-between">
-          <CardTitle>Project Lifecycle Pipeline (Bhopal Constituency)</CardTitle>
-          <span className="text-xs text-slate-400 font-mono">
-            {projectsList.length} Active Works in Constituency
+      <Card noPadding className="border-[#D9DDE3]">
+        <div className="p-4 border-b border-[#D9DDE3] flex items-center justify-between bg-[#F0F2F5]">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200 font-semibold">
+                PORTFOLIO WORKFLOW
+              </span>
+              <h2 className="text-sm font-semibold text-[#17202A]">
+                Project Lifecycle Pipeline (Bhopal Constituency)
+              </h2>
+            </div>
+            <p className="text-xs text-[#5B6470] mt-1">
+              End-to-end statutory execution: Recommended → Sanctioned → In Progress → Asset Commissioned.
+            </p>
+          </div>
+          <span className="text-xs text-[#5B6470] font-mono bg-white px-2.5 py-1 rounded border border-[#D9DDE3] font-semibold">
+            {projectsList.length} Active Works
           </span>
         </div>
-        <CardHint>
-          Visual workflow tracking: Recommended → Sanctioned → In Progress → Completed.
-        </CardHint>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {stages.map((stage) => {
             const worksInStage = projectsList.filter((p) => p.stage === stage);
             const totalStageCr = worksInStage.reduce((acc, p) => acc + p.amountCr, 0);
 
-            const stageBorder =
-              stage === "Completed"
-                ? "border-emerald-500/30"
-                : stage === "In Progress"
-                ? "border-sky-500/30"
-                : stage === "Sanctioned"
-                ? "border-indigo-500/30"
-                : "border-amber-500/30";
-
             return (
               <div
                 key={stage}
-                className={`rounded-xl border ${stageBorder} bg-slate-900/40 p-3 flex flex-col justify-between`}
+                className="rounded border border-[#D9DDE3] bg-[#F0F2F5] p-3 flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  <div className="flex items-center justify-between border-b border-[#D9DDE3] pb-2 mb-2.5">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#17202A] font-mono">
                       {stage}
                     </span>
-                    <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-300">
-                      {worksInStage.length} (₹{totalStageCr.toFixed(2)} Cr)
+                    <span className="rounded bg-white px-1.5 py-0.5 text-[10px] font-mono font-bold text-[#17202A] border border-[#D9DDE3]">
+                      {worksInStage.length} · ₹{totalStageCr.toFixed(2)} Cr
                     </span>
                   </div>
 
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     {worksInStage.map((p) => (
                       <div
                         key={p.id}
-                        className="rounded-lg border border-slate-800/80 bg-slate-950/70 p-2.5 text-xs space-y-1.5 hover:border-slate-700 transition"
+                        className="rounded border border-[#D9DDE3] bg-white p-2.5 text-xs space-y-1.5 hover:border-slate-400 transition shadow-xs"
                       >
-                        <div className="font-semibold text-slate-200 leading-snug">
+                        <div className="font-medium text-[#17202A] leading-snug">
                           {p.name}
                         </div>
-                        <div className="flex items-center justify-between text-[11px] text-slate-400">
-                          <span className="font-mono text-sky-400">₹{p.amountCr} Cr</span>
-                          <Badge tone={riskTone(p.risk)} className="text-[10px]">
-                            Risk {p.risk}
+                        <div className="flex items-center justify-between text-[11px] text-[#5B6470] font-mono">
+                          <span className="text-blue-700 font-semibold tabular-nums">₹{p.amountCr} Cr</span>
+                          <Badge tone={riskTone(p.risk)} className="text-[9px] font-mono">
+                            Risk {p.risk}/100
                           </Badge>
                         </div>
                         {p.delayDays > 0 && (
-                          <div className="text-[10px] font-bold text-rose-400">
-                            Delayed {p.delayDays} days
+                          <div className="text-[10px] font-mono font-semibold text-red-600">
+                            Overdue {p.delayDays} days
                           </div>
                         )}
                       </div>
@@ -184,14 +205,15 @@ export function MpDashboard() {
       </Card>
 
       {/* Bottom Split: Predicted Completion Timelines & Leaflet Constituency Map */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* XGBoost AFT Survival Curves & Timeline */}
         <Card className="space-y-3">
-          <CardTitle rightElement={<Badge tone="info">XGBoost AFT Engine</Badge>}>
-            Predicted Completion Timelines
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Predicted Completion Timelines (XGBoost AFT Engine)</CardTitle>
+            <Badge tone="info" className="font-mono text-[10px]">Survival Model</Badge>
+          </div>
           <CardHint>
-            Machine learning survival curves estimating project completion probability and delivery risk.
+            Accelerated Failure Time (AFT) survival regression estimating delivery probability and completion milestones.
           </CardHint>
 
           <div className="space-y-3 mt-3 max-h-[300px] overflow-y-auto pr-1">
@@ -208,24 +230,24 @@ export function MpDashboard() {
                 return (
                   <div key={p.id} className="space-y-1 text-xs">
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold text-slate-200">{p.name}</span>
-                      <span className="text-[11px] font-mono text-slate-400">
+                      <span className="font-medium text-[#17202A]">{p.name}</span>
+                      <span className="text-[10px] font-mono text-[#7A838E]">
                         Target: {p.expectedDate}
                       </span>
                     </div>
 
-                    <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+                    <div className="h-1.5 w-full rounded bg-[#E5E7EB] overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all duration-700 ${
-                          p.risk >= 70 ? "bg-rose-500" : "bg-sky-500"
+                        className={`h-full rounded transition-all duration-700 ${
+                          p.risk >= 70 ? "bg-red-600" : "bg-blue-600"
                         }`}
                         style={{ width: `${progressPct}%` }}
                       />
                     </div>
 
-                    <div className="flex justify-between text-[10px] text-slate-500">
+                    <div className="flex justify-between text-[10px] text-[#5B6470] font-mono">
                       <span>Phase: {p.stage} ({progressPct}%)</span>
-                      <span className={p.risk >= 70 ? "text-rose-400 font-bold" : ""}>
+                      <span className={p.risk >= 70 ? "text-red-600 font-bold" : ""}>
                         Risk {p.risk}/100
                       </span>
                     </div>
@@ -237,11 +259,12 @@ export function MpDashboard() {
 
         {/* Leaflet Constituency Map */}
         <Card className="space-y-2 p-4">
-          <CardTitle rightElement={<Badge tone="normal">Leaflet Geotagged</Badge>}>
-            Constituency Geographic Map (Bhopal)
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Constituency Spatial Distribution (Bhopal)</CardTitle>
+            <Badge tone="normal" className="font-mono text-[10px]">Geotagged GPS</Badge>
+          </div>
           <CardHint>
-            Pin-pointed interactive GPS locations of works across Bhopal, color-coded by lifecycle stage.
+            Interactive GIS coordinates of sanctioned and ongoing works across Bhopal Parliamentary Constituency.
           </CardHint>
           <ConstituencyMap projects={projectsList} height={280} />
         </Card>

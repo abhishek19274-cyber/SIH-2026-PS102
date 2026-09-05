@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ChevronRight, Sparkles, X } from "lucide-react";
+import { CheckCircle2, ChevronRight, X } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 
 export const DEMO_STEPS = [
@@ -69,53 +69,48 @@ export function DemoTourBar() {
   };
 
   return (
-    <div className="border-b border-sky-500/20 bg-gradient-to-r from-sky-950/40 via-slate-900/90 to-slate-950/90 px-4 py-2.5 text-xs">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-sky-500/20 text-sky-400">
-            <Sparkles className="h-3.5 w-3.5" />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-semibold uppercase tracking-wider text-sky-400">
-              Demo Walkthrough:
-            </span>
-            <span className="font-medium text-slate-200">{current.title}</span>
-            <span className="hidden text-slate-400 sm:inline">— {current.desc}</span>
-          </div>
+    <div className="border-b border-[#D9DDE3] bg-[#F0F2F5] px-4 sm:px-6 py-1.5 text-xs text-[#17202A] shrink-0">
+      <div className="w-full flex flex-wrap items-center justify-between gap-2.5">
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-white border border-[#D9DDE3] px-1.5 py-0.2 rounded-sm shadow-sm">
+            EVALUATION RUNWAY
+          </span>
+          <span className="font-semibold text-[#17202A]">{current.title}</span>
+          <span className="hidden text-[#5B6470] sm:inline">— {current.desc}</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Quick step bubbles */}
+        <div className="flex items-center gap-1.5">
+          {/* Quick step indicators */}
           <div className="hidden items-center gap-1 md:flex">
             {DEMO_STEPS.map((s) => (
               <button
                 key={s.step}
                 onClick={() => handleGoToStep(s)}
                 title={`${s.title}: ${s.desc}`}
-                className={`flex h-6 items-center rounded px-2 text-[11px] font-medium transition ${
+                className={`flex h-5 items-center rounded-sm px-2 text-[10px] font-mono transition-colors ${
                   demoStep === s.step
-                    ? "bg-sky-500 text-slate-950 font-bold shadow-sm"
+                    ? "bg-blue-600 text-white font-bold shadow-sm"
                     : s.step < demoStep
-                    ? "bg-slate-800 text-emerald-400 hover:bg-slate-700"
-                    : "bg-slate-800/60 text-slate-400 hover:bg-slate-700"
+                    ? "bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold"
+                    : "bg-white text-[#5B6470] border border-[#D9DDE3] hover:bg-gray-100 hover:text-[#17202A]"
                 }`}
               >
-                {s.step < demoStep && <CheckCircle2 className="mr-1 h-3 w-3" />}
-                Step {s.step}
+                {s.step < demoStep && <CheckCircle2 className="mr-1 h-2.5 w-2.5 text-emerald-600" />}
+                {s.step}
               </button>
             ))}
           </div>
 
           <button
             onClick={handleNext}
-            className="flex items-center gap-1 rounded-md bg-sky-500/20 px-2.5 py-1 text-sky-300 font-semibold hover:bg-sky-500/30 transition border border-sky-500/30"
+            className="flex items-center gap-1 rounded-sm bg-white px-2 py-0.5 text-blue-700 font-semibold text-[11px] hover:bg-gray-50 transition-colors border border-[#D9DDE3] shadow-sm"
           >
-            Next Step <ChevronRight className="h-3 w-3" />
+            Advance <ChevronRight className="h-3 w-3" />
           </button>
 
           <button
             onClick={() => setDemoTourActive(false)}
-            className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            className="rounded-sm p-0.5 text-[#7A838E] hover:bg-[#D9DDE3] hover:text-[#17202A]"
             title="Dismiss guide"
           >
             <X className="h-3.5 w-3.5" />
